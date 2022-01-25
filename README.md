@@ -10,24 +10,28 @@
 - 출석하기 xpath 알기 (지금은 임의로 checkin으로 해놓음)
 
 ### 01.18
-같은 폴더내의 URL.txt, PASSWORD.txt를 만들고, 클릭하기 원하는 URL, XPath, ID, 비번을 저장해놓았다.\n
+같은 폴더내의 URL.txt, PASSWORD.txt를 만들고, 클릭하기 원하는 URL, XPath, ID, 비번을 저장해놓았다.
 
 문제점 : Path.cwd()는 현재 터미널의 작업공간 주소를 불러온다..
- -> __file__ 객체를 사용함으로 해결\n
+ -> __file__ 객체를 사용함으로 해결
 
 로그인까지 했고, 이제 클릭만 해보자!
 
 ### 01.24 
 #### v0.1.1
-출첵은 다 했고, survey 남음\n
-xpath.txt에 매일 설문조사 xpath가 어떻게 바뀌는지 확인해보고 규칙찾기\n
-login.py에서 survey xpath를 불러와서 리스트로 정리한다음 사용하기\n
+출첵은 다 했고, survey 남음.
+xpath.txt에 매일 설문조사 xpath가 어떻게 바뀌는지 확인해보고 규칙찾기.
+login.py에서 survey xpath를 불러와서 리스트로 정리한다음 사용하기.
 
 ### 01.25 
 #### v0.1.2
-출석, 퇴실 구현\n
-출석 xpath는 확실하지않음\n
-login만 하는법 구현\n
+출석, 퇴실 구현.
+출석 xpath는 확실하지않음.
+login만 하는법 구현.
 
 #### v0.1.3
-schedule 라이브러리 제거\n
+schedule 라이브러리 제거.
+
+#### v0.1.4
+TIL repo와 분리.
+switch_window구문 추가, 이제 survey xpath를 얻는일만 남았다.
