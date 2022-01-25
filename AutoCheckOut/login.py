@@ -34,11 +34,10 @@ class AutoCheckOut:
             self.__checkout = self.__checkout.strip('\n')
             self.__checkin = F.readline()
         with open(MAIN_PATH + stxt, 'r') as S:
-            pass
-            # self.__surveyUrl = S.readline()
-            # self.__surveyUrl = self.__surveyUrl.strip('\n')
-            # __surveyxpath 반복문으로 저장하기
-        # survey #
+            self.__surveyUrl = S.readline()
+            self.__surveyUrl = self.__surveyUrl.strip('\n')
+            self.__surveyXpath = S.readlines()
+            self.__surveyXpath = list(map(lambda s: s.strip('\n'), self.__surveyXpath))
 
     def __loadID(self):
         try:
@@ -59,10 +58,8 @@ class AutoCheckOut:
             self.driver.get(self.__url)
             self.driver.implicitly_wait(5)
         elif url==SURVEY:
-            # open __surveyURL
-            # self.driver.implicitly_wait(5)
-            pass
-        # survey #
+            self.driver.get(self.__surveyUrl)
+            self.driver.implicitly_wait(5)
 
     def login(self):
         _id = self.driver.find_element_by_xpath('//*[@id="userId"]')
@@ -83,12 +80,26 @@ class AutoCheckOut:
     def checkIn(self):
         self.driver.find_element_by_xpath(self.__checkin).click()
 
-    def survey(self):
-        # survey페이지에서 알맞은 설문조사를 선택하는 것부터 만들어야됨
+    def survey(self, isOut):
+        print('설문조사시작')
+        sleep(1)
+        if isOut:       # 퇴실하기
+            for i in range(10, 0, -1):
+                _xpath = self.__surveyXpath[0].replace('/li[10]', f'/li[{i}]')
+                try:
+                    if self.driver.find_element_by_xpath(_xpath).size():
+                        self.driver.find_element_by_xpath(_xpath).click()
+                        self.driver.switch_to.window(self.driver.window_handles[-1])
+                        self.driver.implicitly_wait(5)
+                        
+                except:
+                    print(f'survey line {i} is disable')
         # self.driver.find_element_by_xpath(self.__surveyXpath[0]).click()
         # self.driver.switch_to.window(self.driver.window_handles[-1])
         # self.driver.implicitly_wait(5)
-        pass
+
+        else:
+            pass
 
     def maximize(self):
         self.driver.maximize_window()

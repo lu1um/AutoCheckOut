@@ -1,4 +1,4 @@
-#!/usr/env/bin python
+#!/usr/bin/env python
 
 from threading import Timer
 import time
@@ -97,7 +97,7 @@ class MainWindow(QMainWindow):
         self.aco.receiveID(self.txtbox_id.text(), self.txtbox_pw.text())
     
     def pleaseTxt(self):
-        QMessageBox.about(self, 'ACO', '같은 폴더 내 필요한 파일\nURL.txt\nSURVEY.txt\n')
+        QMessageBox.about(self, 'ACO', '같은 폴더 내 필요한 파일\n\nURL.txt\nSURVEY.txt\n\n확인을 누르면 종료됩니다.')
 
     def survey(self):
 
@@ -155,6 +155,7 @@ class MainWindow(QMainWindow):
             if self.aco.login():
                 self.aco.checkOut()
             self.act.setText('출석체크 완료!')
+            self.aco.openURL(login.SURVEY)
 
     
     def __loadID(self):
