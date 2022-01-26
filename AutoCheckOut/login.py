@@ -43,7 +43,7 @@ class AutoCheckOut:
             self.__surveyUrl = self.__surveyUrl.strip('\n')
             self.__surveyXpath = S.readline()
             self.__surveyXpath = self.__surveyXpath.strip('\n')
-            temp = S.readline()
+            temp = S.readlines()
             temp = list(map(lambda s: s.strip('\n'), temp))
             self.__surveyOutXpath = temp[:10]
             del temp[:10]
@@ -114,36 +114,41 @@ class AutoCheckOut:
             try:
                 if self.driver.find_element_by_xpath(_xpath):
                     self.driver.find_element_by_xpath(_xpath).click()
+                    sleep(2)
                     self.driver.switch_to.window(self.driver.window_handles[-1])
                     self.driver.implicitly_wait(5)
+                    sleep(2)
                     sleep(self.sleepTime)
                     break
             except:
                 print(f'survey line {i} is disable')
         else:
             return False
-        if isOut:       # 퇴실하기
-            self.driver.find_element_by_xpath(self.__surveyOutXpath[0]).click()
-            self.driver.implicitly_wait(5)
-            sleep(self.sleepTime)
-            outwhere = self.driver.find_element_by_xpath(self.__surveyOutXpath[1])
-            outwhere.send_keys(self.__where)    #서울/역삼동
-            sleep(self.sleepTime)
-            for xpath in self.__surveyOutXpath[2:]:
-                self.driver.find_element_by_xpath(xpath).click()
+        try:
+            if isOut:       # 퇴실하기
+                self.driver.find_element_by_xpath(self.__surveyOutXpath[0]).click()
                 self.driver.implicitly_wait(5)
                 sleep(self.sleepTime)
-        else:           # 입실하기
-            self.driver.find_element_by_xpath(self.__surveyInXpath[0]).click()
-            self.driver.implicitly_wait(5)
-            sleep(self.sleepTime)
-            inwhere = self.driver.find_element_by_xpath(self.__surveyInXpath[1])
-            inwhere.send_keys(self.__where)    #서울/역삼동
-            sleep(self.sleepTime)
-            for xpath in self.__surveyInXpath[2:]:
-                self.driver.find_element_by_xpath(xpath).click()
+                outwhere = self.driver.find_element_by_xpath(self.__surveyOutXpath[1])
+                outwhere.send_keys(self.__where)    #서울/역삼동
+                sleep(self.sleepTime)
+                for xpath in self.__surveyOutXpath[2:]:
+                    self.driver.find_element_by_xpath(xpath).click()
+                    self.driver.implicitly_wait(5)
+                    sleep(self.sleepTime)
+            else:           # 입실하기
+                self.driver.find_element_by_xpath(self.__surveyInXpath[0]).click()
                 self.driver.implicitly_wait(5)
                 sleep(self.sleepTime)
+                inwhere = self.driver.find_element_by_xpath(self.__surveyInXpath[1])
+                inwhere.send_keys(self.__where)    #서울/역삼동
+                sleep(self.sleepTime)
+                for xpath in self.__surveyInXpath[2:]:
+                    self.driver.find_element_by_xpath(xpath).click()
+                    self.driver.implicitly_wait(5)
+                    sleep(self.sleepTime)
+        except:
+            return False
         return True
 
     def maximize(self):
