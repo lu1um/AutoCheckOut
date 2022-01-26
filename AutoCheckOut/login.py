@@ -21,6 +21,7 @@ class AutoCheckOut:
         self.__surveyXpath = str()
         self.__surveyOutXpath = list()
         self.__surveyInXpath = list()
+        self.sleepTime = 0
 
         self.idtxt = idtxt
         self.driver = Chrome(MAIN_PATH + 'chromedriver.exe')
@@ -77,9 +78,11 @@ class AutoCheckOut:
         if url==LOGIN:
             self.driver.get(self.__url)
             self.driver.implicitly_wait(5)
+            sleep(self.sleepTime)
         elif url==SURVEY:
             self.driver.get(self.__surveyUrl)
             self.driver.implicitly_wait(5)
+            sleep(self.sleepTime)
 
     def login(self):
         _id = self.driver.find_element_by_xpath('//*[@id="userId"]')
@@ -92,6 +95,7 @@ class AutoCheckOut:
 
         self.driver.find_element_by_xpath('//*[@id="wrap"]/div/div/div[2]/form/div/div[2]/div[3]/a').click()
         self.driver.implicitly_wait(5)
+        sleep(self.sleepTime)
         return True
     
     def checkOut(self):
@@ -112,6 +116,7 @@ class AutoCheckOut:
                     self.driver.find_element_by_xpath(_xpath).click()
                     self.driver.switch_to.window(self.driver.window_handles[-1])
                     self.driver.implicitly_wait(5)
+                    sleep(self.sleepTime)
                     break
             except:
                 print(f'survey line {i} is disable')
@@ -120,26 +125,35 @@ class AutoCheckOut:
         if isOut:       # 퇴실하기
             self.driver.find_element_by_xpath(self.__surveyOutXpath[0]).click()
             self.driver.implicitly_wait(5)
+            sleep(self.sleepTime)
             outwhere = self.driver.find_element_by_xpath(self.__surveyOutXpath[1])
             outwhere.send_keys(self.__where)    #서울/역삼동
+            sleep(self.sleepTime)
             for xpath in self.__surveyOutXpath[2:]:
                 self.driver.find_element_by_xpath(xpath).click()
                 self.driver.implicitly_wait(5)
+                sleep(self.sleepTime)
         else:           # 입실하기
             self.driver.find_element_by_xpath(self.__surveyInXpath[0]).click()
             self.driver.implicitly_wait(5)
+            sleep(self.sleepTime)
             inwhere = self.driver.find_element_by_xpath(self.__surveyInXpath[1])
             inwhere.send_keys(self.__where)    #서울/역삼동
+            sleep(self.sleepTime)
             for xpath in self.__surveyInXpath[2:]:
                 self.driver.find_element_by_xpath(xpath).click()
                 self.driver.implicitly_wait(5)
+                sleep(self.sleepTime)
         return True
 
     def maximize(self):
         self.driver.maximize_window()
 
-    def thisURL(self): # 지금 이 페이지가 뭔지 알려주는 함수
-        pass
+    def slowMode(self, isSlow=True):
+        if isSlow:
+            self.sleepTime = 2
+        else:
+            self.sleepTime = 0
     
     def getIDPW(self):
         return self.__id, self.__password, self.__where

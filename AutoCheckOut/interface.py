@@ -4,7 +4,8 @@ from threading import Timer
 import time
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication, QMessageBox, QMainWindow, QLabel, QLineEdit, QPushButton, QRadioButton, QButtonGroup
+from PyQt5.QtWidgets import QApplication, QMessageBox, QMainWindow, QLabel, QLineEdit,\
+    QPushButton, QRadioButton, QButtonGroup, QCheckBox
 from PyQt5.QtGui import QFont
 
 import login
@@ -14,9 +15,7 @@ SEC_DELAY = 5
 class MainWindow(QMainWindow):
     def __init__(self, urldir, iddir, surveytxt):
         super(MainWindow, self).__init__()
-        self.__loginTime = 0
-        self.__loginMin = 0
-
+        self.__initLogin()
         self.__initUI()
         self.__timerOn()
         try:
@@ -27,7 +26,7 @@ class MainWindow(QMainWindow):
         self.__loadIDPW()
     
     def __initUI(self):
-        self.setGeometry(0, 0, 800, 800)  # x, y, w, h
+        self.setGeometry(0, 0, 720, 600)  # x, y, w, h
         self.setWindowTitle('AutoCheckOut by lu1um')
         # text box
         self.txtbox_id = QLineEdit(self)
@@ -53,7 +52,7 @@ class MainWindow(QMainWindow):
         btn_act.move(100, 400)
         btn_reboot = QPushButton('Reboot Chrome', self)
         btn_reboot.clicked.connect(self.__reboot)
-        btn_reboot.move(100, 550)
+        btn_reboot.move(100, 450)
         # radio button
         self.rbt_login = QRadioButton('출첵', self)
         self.rbt_login.setChecked(True)
@@ -72,6 +71,11 @@ class MainWindow(QMainWindow):
         self.isOut = QButtonGroup()
         self.isOut.addButton(self.rbt_in, 0)
         self.isOut.addButton(self.rbt_out, 1)
+        # slow check box
+        self.cb_slow = QCheckBox('slow mode', self)
+        self.cb_slow.move(320, 75)
+        self.cb_slow.setChecked(False)
+        self.cb_slow.stateChanged.connect(self.__slowCallback)
         # timer display
         self.ampm = QLabel(self)
         makeLabel(self.ampm, 370, 150, 20)
@@ -88,6 +92,10 @@ class MainWindow(QMainWindow):
         self.act.resize(300, 50)
 
         self.show()
+
+    def __initLogin(self):
+        self.__loginTime = 0
+        self.__loginMin = 0
     
     def __loadIDPW(self):
         id, pw, wh = self.aco.getIDPW()
@@ -147,27 +155,29 @@ class MainWindow(QMainWindow):
         self.rbt_out.setEnabled(mode)
     
     def __reboot(self):
-        self.__loginTime = 0
-        self.__loginMin = 0
+        self.__initLogin()
         self.aco.rebootDriver()
         self.act.setText('...')
         self.act.setStyleSheet('Color : black')
         self.__enableRadio()
 
+    def __slowCallback(self):
+        self.aco.slowMode(self.cb_slow.isChecked())
+
     def __startChrome(self, kor):
         if self.actMode.checkedId():
-            self.__loginTime = 0
+            self.__initLogin()
             self.aco.maximize()
             self.aco.openURL(login.LOGIN)
             self.aco.login()
             self.act.setText('로그인 완료!')
         elif self.isOut.checkedId():
             if kor.tm_hour >= 19 or (kor.tm_hour >= self.__loginTime and kor.tm_min >= 30):
+                self.__initLogin()
                 self.act.setText('출석체크 시간이 지났습니다.')
                 self.act.setStyleSheet('Color : blue')
             elif kor.tm_hour >= self.__loginTime and kor.tm_min >= self.__loginMin and kor.tm_sec >= SEC_DELAY:
-                self.__loginTime = 0
-                self.__loginMin = 0
+                self.__initLogin()
                 self.aco.maximize()
                 self.aco.openURL(login.LOGIN)
                 if self.aco.login():
@@ -184,8 +194,7 @@ class MainWindow(QMainWindow):
                 self.act.setText('출석체크 시간이 지났습니다.')
                 self.act.setStyleSheet('Color : blue')
             elif kor.tm_hour >= self.__loginTime and kor.tm_min >= self.__loginMin and kor.tm_sec >= SEC_DELAY:
-                self.__loginTime = 0
-                self.__loginMin = 0
+                self.__initLogin()
                 self.aco.maximize()
                 self.aco.openURL(login.LOGIN)
                 if self.aco.login():
