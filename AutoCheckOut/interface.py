@@ -101,10 +101,6 @@ class MainWindow(QMainWindow):
     def pleaseTxt(self):
         QMessageBox.about(self, 'ACO by lu1um', '같은 폴더 내 필요한 파일\n\nURL.txt\nSURVEY.txt\n\n확인을 누르면 종료됩니다.')
 
-    def survey(self):
-
-        pass
-
     def __timerOn(self):
         t = time.time()
         kor = time.localtime(t)
@@ -165,23 +161,42 @@ class MainWindow(QMainWindow):
             self.aco.openURL(login.LOGIN)
             self.aco.login()
             self.act.setText('로그인 완료!')
-        elif kor.tm_hour >= self.__loginTime and kor.tm_min >= self.__loginMin and kor.tm_sec >= SEC_DELAY:
-            self.__loginTime = 0
-            self.aco.maximize()
-            self.aco.openURL(login.LOGIN)
-            if self.aco.login():
-                if self.isOut.checkedId():
+        elif self.isOut.checkedId():
+            if kor.tm_hour >= 19 or (kor.tm_hour >= self.__loginTime and kor.tm_min >= 30):
+                self.act.setText('출석체크 시간이 지났습니다.')
+                self.act.setStyleSheet('Color : blue')
+            elif kor.tm_hour >= self.__loginTime and kor.tm_min >= self.__loginMin and kor.tm_sec >= SEC_DELAY:
+                self.__loginTime = 0
+                self.__loginMin = 0
+                self.aco.maximize()
+                self.aco.openURL(login.LOGIN)
+                if self.aco.login():
                     self.aco.checkOut()
+                self.act.setText('입실 완료!')
+                self.aco.openURL(login.SURVEY)
+                if self.aco.survey(self.isOut.checkedId()):
+                    self.act.setText('설문조사 완료!')
                 else:
+                    self.act.setText('설문조사 실패..')
+                    self.act.setStyleSheet('Color : red')
+        else:
+            if kor.tm_hour >= 9:
+                self.act.setText('출석체크 시간이 지났습니다.')
+                self.act.setStyleSheet('Color : blue')
+            elif kor.tm_hour >= self.__loginTime and kor.tm_min >= self.__loginMin and kor.tm_sec >= SEC_DELAY:
+                self.__loginTime = 0
+                self.__loginMin = 0
+                self.aco.maximize()
+                self.aco.openURL(login.LOGIN)
+                if self.aco.login():
                     self.aco.checkIn()
-            self.act.setText('출석체크 완료!')
-            self.aco.openURL(login.SURVEY)
-            if self.aco.survey(self.isOut.checkedId()):
-                self.act.setText('설문조사 완료!')
-            else:
-                self.act.setText('설문조사 실패..')
-                self.act.setStyleSheet('Color : red')
-        print(f'mode = {self.actMode.checkedId()}, isout = {self.isOut.checkedId()}')
+                self.act.setText('퇴실 완료!')
+                self.aco.openURL(login.SURVEY)
+                if self.aco.survey(self.isOut.checkedId()):
+                    self.act.setText('설문조사 완료!')
+                else:
+                    self.act.setText('설문조사 실패..')
+                    self.act.setStyleSheet('Color : red')
 
 def makeLabel(label, x, y, fontsize=20, fontcolor='black', align=Qt.AlignLeft, text=''):
     label.move(x, y)

@@ -57,8 +57,8 @@ class AutoCheckOut:
                 self.__password = self.__password.strip('\n')
                 self.__where = F.readline()
         except:
-            self.__id = ''
-            self.__password = ''
+            self.__id = 'example@hello.com'
+            self.__password = '1q2w3e4r'
             self.__where = '서울/역삼동/자택'
 
     def rebootDriver(self):
