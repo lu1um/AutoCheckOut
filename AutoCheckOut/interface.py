@@ -96,7 +96,7 @@ class MainWindow(QMainWindow):
         self.txtbox_wh.setText(wh)
     
     def __writeIDPW(self):
-        self.aco.receiveID(self.txtbox_id.text(), self.txtbox_pw.text())
+        self.aco.receiveID(self.txtbox_id.text(), self.txtbox_pw.text(), self.txtbox_wh.text())
     
     def pleaseTxt(self):
         QMessageBox.about(self, 'ACO by lu1um', '같은 폴더 내 필요한 파일\n\nURL.txt\nSURVEY.txt\n\n확인을 누르면 종료됩니다.')
