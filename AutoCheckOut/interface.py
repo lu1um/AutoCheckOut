@@ -12,12 +12,12 @@ import login
 SEC_DELAY = 5
 
 class MainWindow(QMainWindow):
-    def __init__(self, urldir, iddir, surveytxt, dftxt):
+    def __init__(self, urldir, iddir, surveytxt):
         super(MainWindow, self).__init__()
         self.__loginTime = 0
         self.__loginMin = 0
 
-        self.__initUI(dftxt)
+        self.__initUI()
         self.__timerOn()
         try:
             self.aco = login.AutoCheckOut(urldir, iddir, surveytxt)
@@ -26,10 +26,9 @@ class MainWindow(QMainWindow):
             exit()
         self.__loadIDPW()
     
-    def __initUI(self, dftxt):
+    def __initUI(self):
         self.setGeometry(0, 0, 800, 800)  # x, y, w, h
-        self.setWindowTitle('AutoCheckOut')
-        self.status_bar = self.statusBar()
+        self.setWindowTitle('AutoCheckOut by lu1um')
         # text box
         self.txtbox_id = QLineEdit(self)
         self.txtbox_id.move(100, 150)
@@ -37,10 +36,9 @@ class MainWindow(QMainWindow):
         self.txtbox_pw = QLineEdit(self)
         self.txtbox_pw.move(100, 250)
         self.txtbox_pw.resize(250, 30)
-        self.txtbox_sv = QLineEdit(self)
-        self.txtbox_sv.move(100, 350)
-        self.txtbox_sv.resize(250, 30)
-        self.txtbox_sv.setText(dftxt)
+        self.txtbox_wh = QLineEdit(self)
+        self.txtbox_wh.move(100, 350)
+        self.txtbox_wh.resize(250, 30)
         # text box label
         self.id = QLabel(self)
         makeLabel(self.id, 100, 120, 12, text='ID')
@@ -53,6 +51,9 @@ class MainWindow(QMainWindow):
         btn_act.clicked.connect(self.__activate)
         btn_act.setStyleSheet('background-color: green; color: white')
         btn_act.move(100, 400)
+        btn_reboot = QPushButton('Reboot Chrome', self)
+        btn_reboot.clicked.connect(self.__reboot)
+        btn_reboot.move(100, 550)
         # radio button
         rbt_login = QRadioButton('출첵', self)
         rbt_login.setChecked(True)
@@ -89,15 +90,16 @@ class MainWindow(QMainWindow):
         self.show()
     
     def __loadIDPW(self):
-        id, pw = self.aco.getIDPW()
+        id, pw, wh = self.aco.getIDPW()
         self.txtbox_id.setText(id)
         self.txtbox_pw.setText(pw)
+        self.txtbox_wh.setText(wh)
     
     def __writeIDPW(self):
         self.aco.receiveID(self.txtbox_id.text(), self.txtbox_pw.text())
     
     def pleaseTxt(self):
-        QMessageBox.about(self, 'ACO', '같은 폴더 내 필요한 파일\n\nURL.txt\nSURVEY.txt\n\n확인을 누르면 종료됩니다.')
+        QMessageBox.about(self, 'ACO by lu1um', '같은 폴더 내 필요한 파일\n\nURL.txt\nSURVEY.txt\n\n확인을 누르면 종료됩니다.')
 
     def survey(self):
 
@@ -140,6 +142,11 @@ class MainWindow(QMainWindow):
                 self.__loginTime = 8
                 self.__loginMin = 30
         self.__writeIDPW()
+    
+    def __reboot(self):
+        self.aco.rebootDriver()
+        self.act.setText('...')
+        self.act.setStyleSheet('Color : black')
 
     def __startChrome(self, kor):
         if self.actMode.checkedId():
@@ -153,14 +160,17 @@ class MainWindow(QMainWindow):
             self.aco.maximize()
             self.aco.openURL(login.LOGIN)
             if self.aco.login():
-                self.aco.checkOut()
+                if self.isOut.checkedId():
+                    self.aco.checkOut()
+                else:
+                    self.aco.checkIn()
             self.act.setText('출석체크 완료!')
             self.aco.openURL(login.SURVEY)
-
-    
-    def __loadID(self):
-        pass
-    
+            if self.aco.survey(self.isOut.checkedId()):
+                self.act.setText('설문조사 완료!')
+            else:
+                self.act.setText('설문조사 실패..')
+                self.act.setStyleSheet('Color : red')
 
 def makeLabel(label, x, y, fontsize=20, fontcolor='black', align=Qt.AlignLeft, text=''):
     label.move(x, y)

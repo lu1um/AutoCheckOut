@@ -1,5 +1,7 @@
 # AutoCheckOut by python
 
+Github : https://github.com/lu1um/AutoCheckOut.git
+
 ** 참고 문헌 **
 1. https://sir.kr/so_python/273
 2. https://pythondocs.net/selenium/셀레니움-wait-개념-이해하기-implicitly-wait-vs-explicitly-wait/
@@ -35,3 +37,10 @@ schedule 라이브러리 제거.
 #### v0.1.4
 TIL repo와 분리.
 switch_window구문 추가, 이제 survey xpath를 얻는일만 남았다.
+
+#### v0.1.5
+survey 약간 추가, test필요.
+
+### 01.26
+#### v.0.1.6
+완성, test필요 저녁테스트해보기!
