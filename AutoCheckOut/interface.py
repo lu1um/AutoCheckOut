@@ -40,12 +40,12 @@ class MainWindow(QMainWindow):
         self.txtbox_wh.move(100, 350)
         self.txtbox_wh.resize(250, 30)
         # text box label
-        self.id = QLabel(self)
-        makeLabel(self.id, 100, 120, 12, text='ID')
-        self.pw = QLabel(self)
-        makeLabel(self.pw, 100, 220, 12, text='Password')
-        self.sv = QLabel(self)
-        makeLabel(self.sv, 100, 320, 12, text='설문조사 주소')
+        lbid = QLabel(self)
+        makeLabel(lbid, 100, 120, 12, text='ID')
+        lbpw = QLabel(self)
+        makeLabel(lbpw, 100, 220, 12, text='Password')
+        lbsv = QLabel(self)
+        makeLabel(lbsv, 100, 320, 12, text='설문조사 주소')
         # push button
         btn_act = QPushButton('&Activate', self)
         btn_act.clicked.connect(self.__activate)
@@ -55,23 +55,23 @@ class MainWindow(QMainWindow):
         btn_reboot.clicked.connect(self.__reboot)
         btn_reboot.move(100, 550)
         # radio button
-        rbt_login = QRadioButton('출첵', self)
-        rbt_login.setChecked(True)
-        rbt_login.move(100, 50)
-        rbt_none = QRadioButton('로그인만', self)
-        rbt_none.move(200, 50)
+        self.rbt_login = QRadioButton('출첵', self)
+        self.rbt_login.setChecked(True)
+        self.rbt_login.move(100, 50)
+        self.rbt_none = QRadioButton('로그인만', self)
+        self.rbt_none.move(200, 50)
         self.actMode = QButtonGroup()
-        self.actMode.addButton(rbt_login, 0)
-        self.actMode.addButton(rbt_none, 1)
+        self.actMode.addButton(self.rbt_login, 0)
+        self.actMode.addButton(self.rbt_none, 1)
 
-        rbt_in = QRadioButton('출석', self)
-        rbt_in.move(100, 75)
-        rbt_out = QRadioButton('퇴실', self)
-        rbt_out.move(200, 75)
-        rbt_out.setChecked(True)
+        self.rbt_in = QRadioButton('출석', self)
+        self.rbt_in.move(100, 75)
+        self.rbt_out = QRadioButton('퇴실', self)
+        self.rbt_out.move(200, 75)
+        self.rbt_out.setChecked(True)
         self.isOut = QButtonGroup()
-        self.isOut.addButton(rbt_in, 0)
-        self.isOut.addButton(rbt_out, 1)
+        self.isOut.addButton(self.rbt_in, 0)
+        self.isOut.addButton(self.rbt_out, 1)
         # timer display
         self.ampm = QLabel(self)
         makeLabel(self.ampm, 370, 150, 20)
@@ -142,11 +142,21 @@ class MainWindow(QMainWindow):
                 self.__loginTime = 8
                 self.__loginMin = 30
         self.__writeIDPW()
+        self.__enableRadio(False)
+
+    def __enableRadio(self, mode=True):
+        self.rbt_login.setEnabled(mode)
+        self.rbt_none.setEnabled(mode)
+        self.rbt_in.setEnabled(mode)
+        self.rbt_out.setEnabled(mode)
     
     def __reboot(self):
+        self.__loginTime = 0
+        self.__loginMin = 0
         self.aco.rebootDriver()
         self.act.setText('...')
         self.act.setStyleSheet('Color : black')
+        self.__enableRadio()
 
     def __startChrome(self, kor):
         if self.actMode.checkedId():
@@ -171,6 +181,7 @@ class MainWindow(QMainWindow):
             else:
                 self.act.setText('설문조사 실패..')
                 self.act.setStyleSheet('Color : red')
+        print(f'mode = {self.actMode.checkedId()}, isout = {self.isOut.checkedId()}')
 
 def makeLabel(label, x, y, fontsize=20, fontcolor='black', align=Qt.AlignLeft, text=''):
     label.move(x, y)

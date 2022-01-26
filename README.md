@@ -42,5 +42,11 @@ switch_window구문 추가, 이제 survey xpath를 얻는일만 남았다.
 survey 약간 추가, test필요.
 
 ### 01.26
-#### v.0.1.6
+#### v0.1.6
 완성, test필요 저녁테스트해보기!
+
+#### v0.1.7
+오류수정.
+
+#### v0.1.8
+reboot chrome버튼 및 기능 생성.
