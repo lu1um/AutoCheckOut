@@ -7,8 +7,12 @@ Github : https://github.com/lu1um/AutoCheckOut.git
 2. https://pythondocs.net/selenium/셀레니움-wait-개념-이해하기-implicitly-wait-vs-explicitly-wait/
 3. https://hwan001.tistory.com/119
 
-## to-do list
-- real test
+사용법은 폴더내의 설명서.txt 참고  
+
+<details>
+  <summary>패치노트</summary>
+  
+  <div markdown="1">  
 
 ### 01.18
 같은 폴더내의 URL.txt, PASSWORD.txt를 만들고, 클릭하기 원하는 URL, XPath, ID, 비번을 저장해놓았다     
@@ -60,3 +64,8 @@ reboot chrome버튼 및 기능 생성
 #### v0.2.2
 login.py의 오타 수정  
 저녁 테스트결과 잘됨  
+
+### 02.04
+debug.py추가, 설문조사가 2페이지에 있을 경우 고려  
+  </div>
+</details>
