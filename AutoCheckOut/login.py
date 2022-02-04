@@ -1,16 +1,24 @@
 #!/usr/bin/env python
 
-from time import sleep
+from time import sleep, localtime
 
 from selenium.webdriver import Chrome
 
 LOGIN = 1
 SURVEY = 2
 
+TODAY = 1
+FUTURE = 2
+PAST = 3
+
 MAIN_PATH = __file__ + '\\..\\'
+ID_PATH = '//*[@id="userId"]'
+PW_PATH = '//*[@id="userPwd"]'
+LOGIN_PATH = '//*[@id="wrap"]/div/div/div[2]/form/div/div[2]/div[3]/a'
+FIND_PATH = '//*[@id="wrap"]/form/div/div[2]/div/div/ul/li[10]/div/div[1]/dfn'
 
 class AutoCheckOut:
-    def __init__(self, urltxt, idtxt, surveytxt):
+    def __init__(self, urltxt=None, idtxt=None, surveytxt=None, debug=False):
         self.__url = str()
         self.__checkout = str()
         self.__checkin = str()
@@ -21,14 +29,16 @@ class AutoCheckOut:
         self.__surveyXpath = str()
         self.__surveyOutXpath = list()
         self.__surveyInXpath = list()
+        self.debug = debug
         self.sleepTime = 0
 
         self.idtxt = idtxt
         self.driver = Chrome(MAIN_PATH + 'chromedriver.exe')
 
-        self.driver.minimize_window()
-        self.__loadURL(urltxt, surveytxt)
-        self.__loadID()
+        if not debug:
+            self.driver.minimize_window()
+            self.__loadURL(urltxt, surveytxt)
+            self.__loadID()
 
     def __loadURL(self, urltxt, stxt):
         temp = list()
@@ -67,12 +77,16 @@ class AutoCheckOut:
         self.driver = Chrome(MAIN_PATH + 'chromedriver.exe')
         self.driver.minimize_window()
 
-    def receiveID(self, id, pw, wh):
+    def receiveID(self, id, pw, wh=None):
         self.__id = id
         self.__password = pw
         self.__where = wh
-        with open(MAIN_PATH + self.idtxt, 'w') as F:
-            F.write(f'{id}\n{pw}\n{wh}')
+        if not self.debug:
+            with open(MAIN_PATH + self.idtxt, 'w') as F:
+                F.write(f'{id}\n{pw}\n{wh}')
+
+    def receiveURL(self, url):
+        self.__url = url
 
     def openURL(self, url=LOGIN):
         if url==LOGIN:
@@ -84,16 +98,16 @@ class AutoCheckOut:
             self.driver.implicitly_wait(5)
             sleep(self.sleepTime)
 
-    def login(self):
-        _id = self.driver.find_element_by_xpath('//*[@id="userId"]')
-        _password = self.driver.find_element_by_xpath('//*[@id="userPwd"]')
+    def login(self, idpath=ID_PATH, pwpath=PW_PATH, loginpath=LOGIN_PATH):
+        _id = self.driver.find_element_by_xpath(idpath)
+        _password = self.driver.find_element_by_xpath(pwpath)
 
         _id.send_keys(self.__id)
         _password.send_keys(self.__password)
 
         sleep(1)
 
-        self.driver.find_element_by_xpath('//*[@id="wrap"]/div/div/div[2]/form/div/div[2]/div[3]/a').click()
+        self.driver.find_element_by_xpath(loginpath).click()
         self.driver.implicitly_wait(5)
         sleep(self.sleepTime)
         return True
@@ -105,6 +119,16 @@ class AutoCheckOut:
     def checkIn(self):
         self.driver.find_element_by_xpath(self.__checkin).click()
         sleep(1)
+
+    def _findSurvey(self, isOut):
+        survey_txt = self.driver.find_element_by_xpath(FIND_PATH).text
+        survey_date = survey_txt[:6]
+        if isToday(survey_date) == TODAY:   # 마지막 설문조사 날짜가 오늘일 때
+            if isOut:                       # 퇴실일 경우
+                if '오후 건강현황' in survey_txt:
+                    pass # 일단 10번쨰거 확인하고, 미래꺼면 2페이지로 넘어가기
+                         # today면 10을 return하고, 과거꺼면 원래 방식대로 찾아서 i(행 number) 출력
+
 
     def survey(self, isOut):
         print('설문조사시작')
@@ -162,3 +186,26 @@ class AutoCheckOut:
     
     def getIDPW(self):
         return self.__id, self.__password, self.__where
+
+    def clickXpath(self, xpath):
+        self.driver.find_element_by_xpath(xpath).click()
+
+def today():
+    year = str(localtime().tm_year)[2:]
+    month = str(localtime().tm_mon)
+    day = str(localtime().tm_mday)
+    if len(month) == 1:
+        month = '0' + month
+    if len(day) == 1:
+        day = '0' + day
+    return year + month + day
+
+def isToday(day):
+    _today = int(today())
+    _date = int(day)
+    if _today == _date:
+        return TODAY
+    elif _today > _date:
+        return PAST
+    elif _today < _date:
+        return FUTURE

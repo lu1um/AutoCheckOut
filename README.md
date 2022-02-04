@@ -20,11 +20,13 @@ Github : https://github.com/lu1um/AutoCheckOut.git
 문제점 : Path.cwd()는 현재 터미널의 작업공간 주소를 불러온다..  
  -> __file__ 객체를 사용함으로 해결
 
+
 ### 01.24 
 #### v0.1.1
 출첵기능 완료  
 xpath.txt에 매일 설문조사 xpath가 어떻게 바뀌는지 확인해보고 규칙찾기  
 login.py에서 survey xpath를 불러와서 리스트로 정리한다음 사용하기 
+
 
 ### 01.25 
 #### v0.1.2
@@ -41,6 +43,7 @@ switch_window구문 추가, 이제 survey xpath를 얻는일만 남았다
 
 #### v0.1.5
 survey 약간 추가, test필요  
+
 
 ### 01.26
 #### v0.1.6
@@ -65,7 +68,11 @@ reboot chrome버튼 및 기능 생성
 login.py의 오타 수정  
 저녁 테스트결과 잘됨  
 
+
 ### 02.04
 debug.py추가, 설문조사가 2페이지에 있을 경우 고려  
+#### v0.2.3
+debug를 위해 login.py 코드 수정  
+2페이지에 해당 설문조사가 있을 떄 & 탐색속도 향상 코드 추가, 미완성
   </div>
 </details>
